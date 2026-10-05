@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>英打遊戲開發歷程網站</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #f5f3ec;
+      color: #243e38;
+      margin: 0;
+      line-height: 1.7;
+    }
+    main {
+      max-width: 900px;
+      margin: auto;
+      padding: 40px 20px;
+    }
+    h1 { font-size: 32px; margin-bottom: 8px; }
+    p.subtitle { color: #555; margin-bottom: 32px; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+    }
+    article {
+      background: white;
+      border: 1px solid #ccd7ce;
+      border-radius: 18px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    h2 { font-size: 20px; margin-top: 0; }
+    a.btn {
+      display: inline-block;
+      margin-top: 16px;
+      padding: 8px 16px;
+      background: #245e50;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      text-align: center;
+    }
+    a.btn:hover { background: #1b473c; }
+  </style>
+</head>
+<body>
+
+<main>
+  <h1>英打遊戲開發歷程</h1>
+  <p class="subtitle">紀錄從雛型、多媒體應用到完整遊戲的開發過程。</p>
+
+  <div class="grid">
+    <!-- 卡片 1 -->
+    <article>
+      <div>
+        <h2>任務一｜版本一</h2>
+        <p>只有標題與開始按鈕的基礎網頁架構。</p>
+      </div>
+      <a href="https://u11517004.github.io/typing-v1/" target="_blank" class="btn">開啟版本一 →</a>
+    </article>
+
+    <!-- 卡片 2 -->
+    <article>
+      <div>
+        <h2>任務二｜版本二</h2>
+        <p>加入鍵盤示意圖片與點擊發聲音效。</p>
+      </div>
+      <a href="https://u11517004.github.io/typing-v2/" target="_blank" class="btn">開啟版本二 →</a>
+    </article>
+
+    <!-- 卡片 3 -->
+    <article>
+      <div>
+        <h2>任務三｜版本三</h2>
+        <p>ASDF 鍵盤基礎練習（即將推出）。</p>
+      </div>
+      <a href="coming-soon.html" class="btn">查看進度 →</a>
+    </article>
+  </div>
+</main>
+
+</body>
+</html>
