@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>英打遊戲版本四 - 十鍵掉落遊戲</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #f5f3ec;
+      color: #243e38;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+    .game-card {
+      background: white;
+      border: 1px solid #ccd7ce;
+      border-radius: 18px;
+      padding: 24px;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+      width: 600px;
+      max-width: 95%;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .score-board {
+      font-size: 20px;
+      font-weight: bold;
+      color: #245e50;
+    }
+    .game-area {
+      position: relative;
+      width: 100%;
+      height: 350px;
+      background-color: #243e38;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .falling-letter {
+      position: absolute;
+      width: 44px;
+      height: 44px;
+      background-color: #b16b35;
+      color: white;
+      font-size: 24px;
+      font-weight: bold;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    .danger-zone {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 10px;
+      background-color: #e74c3c;
+    }
+    .btn {
+      padding: 10px 20px;
+      font-size: 16px;
+      background: #245e50;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin: 5px;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .btn:hover { background: #1b473c; }
+    .btn-secondary {
+      background: #888;
+    }
+    .btn-secondary:hover { background: #666; }
+  </style>
+</head>
+<body>
+
+<div class="game-card">
+  <div class="header">
+    <h2>版本四：十鍵掉落遊戲</h2>
+    <div class="score-board">得分：<span id="score">0</span></div>
+  </div>
+
+  <div class="game-area" id="gameArea">
+    <div class="danger-zone"></div>
+  </div>
+
+  <div>
+    <button class="btn" id="startBtn">開始遊戲</button>
+    <a href="../index.html" class="btn btn-secondary">返回歷程首頁</a>
+  </div>
+</div>
+
+<script>
+  const validKeys = ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ';'];
+  const gameArea = document.getElementById('gameArea');
+  const scoreDisplay = document.getElementById('score');
+  const startBtn = document.getElementById('startBtn');
+
+  let score = 0;
+  let isPlaying = false;
+  let fallingLetters = [];
+  let gameLoopId = null;
+  let spawnIntervalId = null;
+
+  function createLetter() {
+    if (!isPlaying) return;
+
+    const char = validKeys[Math.floor(Math.random() * validKeys.length)];
+    const letterEl = document.createElement('div');
+    letterEl.className = 'falling-letter';
+    letterEl.textContent = char;
+
+    // 隨機 X 軸位置 (扣除字母寬度 44px)
+    const maxX = gameArea.clientWidth - 44;
+    const x = Math.floor(Math.random() * maxX);
+    
+    letterEl.style.left = `${x}px`;
+    letterEl.style.top = '0px';
+
+    gameArea.appendChild(letterEl);
+
+    fallingLetters.push({
+      element: letterEl,
+      char: char,
+      y: 0,
+      speed: 1.5 + Math.random() * 1.5 // 隨機掉落速度
+    });
+  }
+
+  function updateGame() {
+    if (!isPlaying) return;
+
+    const areaHeight = gameArea.clientHeight;
+
+    for (let i = fallingLetters.length - 1; i >= 0; i--) {
+      const item = fallingLetters[i];
+      item.y += item.speed;
+      item.element.style.top = `${item.y}px`;
+
+      // 觸底移除
+      if (item.y >= areaHeight - 44) {
+        gameArea.removeChild(item.element);
+        fallingLetters.splice(i, 1);
+      }
+    }
+
+    gameLoopId = requestAnimationFrame(updateGame);
+  }
+
+  function startGame() {
+    // 清除舊狀態
+    isPlaying = true;
+    score = 0;
+    scoreDisplay.textContent = score;
+    startBtn.textContent = '重新開始';
+
+    fallingLetters.forEach(item => gameArea.removeChild(item.element));
+    fallingLetters = [];
+
+    if (gameLoopId) cancelAnimationFrame(gameLoopId);
+    if (spawnIntervalId) clearInterval(spawnIntervalId);
+
+    // 每 1.2 秒產生一個新字母
+    spawnIntervalId = setInterval(createLetter, 1200);
+    updateGame();
+  }
+
+  startBtn.addEventListener('click', startGame);
+
+  window.addEventListener('keydown', (e) => {
+    if (!isPlaying) return;
+
+    const pressedKey = e.key.toUpperCase();
+
+    // 尋找位置最靠下方且匹配的字母
+    let matchIndex = -1;
+    let maxY = -1;
+
+    for (let i = 0; i < fallingLetters.length; i++) {
+      if (fallingLetters[i].char === pressedKey) {
+        if (fallingLetters[i].y > maxY) {
+          maxY = fallingLetters[i].y;
+          matchIndex = i;
+        }
+      }
+    }
+
+    if (matchIndex !== -1) {
+      score += 10;
+      scoreDisplay.textContent = score;
+      gameArea.removeChild(fallingLetters[matchIndex].element);
+      fallingLetters.splice(matchIndex, 1);
+    }
+  });
+</script>
+
+</body>
+</html>
